@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>색깔변환</title>
+    <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+  </head>
+  <body>
+    <h1>색깔변환</h1>
+    <label for="keywords">키워드:</label>
+    <input type="text" id="keywords" name="keywords" maxlength="30" vali required />
+    <button onclick="search()" id="searchButton">입력</button>  
+    <br /><br />
+    <div id="result"></div>
+    <script>
+      //API요청이 올 때 까지 버튼 비활성화
+      function disableButton() {
+        document.getElementById('searchButton').disabled = true;
+      }
+      function enableButton() {
+        document.getElementById('searchButton').disabled = false;
+      }
+      function search() {
+        disableButton();
+        const api_key = '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';
+        const keywords = document.getElementById('keywords').value;
+        const messages = [
+          { role: 'system', content: '지금부터하는 단어에 대한 색깔을 HEX코드로 답변해줘 다른말은 아무것도하지 말고 코드로만 답해줘 앞에 #은 붙여야돼' },
+          { role: 'user', content: keywords + "에 대하여 HEX코드로 답변해줘 다른말은 아무것도 하지 말고 코드로만 답해줘앞에 #은 붙여야돼" },
+        ];
+        const config = {
+          headers: {
+            Authorization: `Bearer ${api_key}`,
+            'Content-Type': 'application/json',
+          },
+        };
+        const data = {
+          model: 'gpt-3.5-turbo',
+          temperature: 1.0,
+          n: 1,
+          messages: messages,
+        };
+        axios
+          .post('https://api.openai.com/v1/chat/completions', data, config)
+          .then(function (response) {
+            const completion = response.data.choices[0].message.content;
+            document.body.style.backgroundColor = completion;
+            console.log(completion);
+            enableButton();
+          })
+          .catch(function (error) {
+            console.log(error);
+            enableButton();
+          });
+      }
+    </script>
+  </body>
+</html>
